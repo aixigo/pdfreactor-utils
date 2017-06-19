@@ -1,0 +1,23 @@
+{
+   "name": "pdfreactor-utils",
+   "version": "0.1.0-pre",
+   "description": "Small utility belt for JavaScript within HTML documents rendered with PDFreactor",
+   "main": "index.js",
+   "repository": "git@github.com:aixigo/pdfreactor-utils.git",
+   "author": "Alexander Wilden <alexander.wilden@aixigo.de>",
+   "license": "MIT",
+   "scripts": {
+      "test": "mocha",
+      "apidoc": "laxar-dox -d docs/api index.js"
+   },
+   "peerDependencies": {
+      "d3": "^4.0.0"
+   },
+   "devDependencies": {
+      "chai": "^3.5.0",
+      "d3": "^4.0.0",
+      "jsdom": "^11.0.0",
+      "laxar-dox": "^2.0.0-rc.0",
+      "mocha": "^3.3.0"
+   }
+}
