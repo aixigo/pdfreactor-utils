@@ -1,6 +1,6 @@
 {
    "name": "pdfreactor-utils",
-   "version": "0.1.0-pre",
+   "version": "0.1.0",
    "description": "Small utility belt for JavaScript within HTML documents rendered with PDFreactor",
    "main": "index.js",
    "repository": "git@github.com:aixigo/pdfreactor-utils.git",
