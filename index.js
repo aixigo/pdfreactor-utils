@@ -8,22 +8,30 @@ const d3 = require( 'd3' );
 module.exports = { renderToc, renderPdf, renderOffscreen };
 
 /**
- * Renders a basic table of contents for the given `headingSelector`. By default only `h1` and `h2` tags are included
- * in the table of contents. Each entry results in a `li` element with an `a` element as child. The HTML content of the
- * link will be set to the `innerHTML` property of the respective heading.
- * In case a heading element already has a value for the `id` attribute, this will be used for the link. Otherwise an
- * id is created using the current `textContent` of the heading concatenated with its index in the list of matched
- * headings. The resulting HTML fragment is then rendered into the element found for the `targetElementSelector`. Hence
- * this should either be an `ul` or `ol` element.
- * Each `li` will receive a CSS class name `level-` with the node name of the heading element appended. For example a
- * toc entry for a `h2` heading element will receive the css class `level-h2`.
+ * Renders a basic table of contents for the given `headingSelector`. By default only `h1` and `h2` tags are
+ * included in the table of contents. Each entry results in a `li` element with an `a` element as child. The
+ * HTML content of the link will be set to the `innerHTML` property of the respective heading.
  * 
- * To prevent specific headings from appearing in the table of contents, they can be marked with a `data-toc-ignore`
- * attribute.
+ * In case a heading element already has a value for the `id` attribute, this will be used for the link.
+ * Otherwise an id is created using the current `textContent` of the heading concatenated with its index in
+ * the list of matched headings. The resulting HTML fragment is then rendered into the element found for the
+ * `targetElementSelector`. Hence this should either be an `ul` or `ol` element.
+ * 
+ * Each `li` will receive a CSS class name `level-` with the node name of the heading element appended. For
+ * example a toc entry for a `h2` heading element will receive the css class `level-h2`.
+ * 
+ * To prevent specific headings from appearing in the table of contents, they can be marked with a
+ * `data-toc-ignore` attribute.
+ * 
+ * Example:
+ * ```html
+ * <h1>First headline</h1>
+ * <h1 data-toc-ignore>I will not appear in the table of contents</h1>
+ * ```
  * 
  * @param {String} targetElementSelector
  *    selector for the element to append the toc to (should be `ul` or `ol`)
- * @param {String} [headingSelector=h1, h2]
+ * @param {String} [headingSelector='h1,h2']
  *    selector for heading elements to create toc entries for
  */
 function renderToc( targetElementSelector, headingSelector = 'h1, h2' ) {
@@ -41,15 +49,16 @@ function renderToc( targetElementSelector, headingSelector = 'h1, h2' ) {
       }, tocList.innerHTML );
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Embeds an external PDF file as single image per page. This is specific to PDFreactor and uses proprietary features to
- * read the number of available pages and select a page from the included PDF. Each page is rendered as an image into
- * the provided parent element. 
+ * Embeds an external PDF file as single image per page. This is specific to PDFreactor and uses proprietary
+ * features to read the number of available pages and select a page from the included PDF. Each page is
+ * rendered as an image into the provided parent element. 
  * 
- * In order to achieve a seamless integration of the PDF into the current document flow, margins, paddings and size have
- * to be adjusted via CSS.
+ * In order to achieve a seamless integration of the PDF into the current document flow, margins, paddings and
+ * size have to be adjusted via CSS. For this the single images will all receive the CSS class `embedded-pdf`
+ * and a page specific class `embedded-pdf-page-#` where `#` is replaced by the page number (starting from 1). 
  * 
  * @param {String} parentSelector 
  *    selector for the element the PDF pages should be appended to
@@ -58,8 +67,8 @@ function renderToc( targetElementSelector, headingSelector = 'h1, h2' ) {
  */
 function renderPdf( parentSelector, src ) {
    const parent = document.querySelector( parentSelector );
-   const template =
-      page => `<img src="${src}" style="-ro-source-page: ${page}" class="embedded-pdf page-${page}" />`;
+   const template = page =>
+      `<img src="${src}" style="-ro-source-page: ${page}" class="embedded-pdf embedded-pdf-page-${page}" />`;
 
    parent.innerHTML += template( 1 );
    const numberOfPages = parent.lastChild.roPageCount;
@@ -68,19 +77,20 @@ function renderPdf( parentSelector, src ) {
    }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Helps rendering the contents of an SVG element off-screen (i.e. while the according DOM element is detached from its
- * parent node). Especially when creating a lot of SVG nodes, for example when rendering data-intensive charts, this 
- * improves performance dramatically.
+ * Helps rendering the contents of an SVG element off-screen (i.e. while the according DOM element is detached
+ * from its parent node). Especially when creating a lot of SVG nodes, for example when rendering
+ * data-intensive charts, this improves performance dramatically.
  * 
- * The `renderFunction` will be called once while the SVG element is detached. It receives the following arguments:
+ * The `renderFunction` will be called once while the SVG element is detached. It receives the following
+ * arguments:
  * - `svg`: the d3 selection for the SVG element
  * - `rect`: the result of calling `getBoundClientRect()` on the element
- * - `rendered`: a function to temporarily re-attach the element and call the callback provided to it. This is useful
- *   if an intermediate rendering is necessary, e.g. for calculation of layout information. The result of the callback
- *   passed to this function will be returned.
+ * - `rendered`: a function to temporarily re-attach the element and call the callback provided to it. This is
+ *   useful if an intermediate rendering is necessary, e.g. for calculation of layout information. The result
+ *   of the callback passed to this function will be returned.
  * 
  * Example:
  * ```js

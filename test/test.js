@@ -123,9 +123,9 @@ describe( 'renderPdf', () => {
             sourcePageStyle: image.style.RoSourcePage
          }) );
       expect( imageData ).to.deep.equal( [
-         { src: 'pdf-file.pdf', classes: 'embedded-pdf page-1', sourcePageStyle: '1' },
-         { src: 'pdf-file.pdf', classes: 'embedded-pdf page-2', sourcePageStyle: '2' },
-         { src: 'pdf-file.pdf', classes: 'embedded-pdf page-3', sourcePageStyle: '3' }
+         { src: 'pdf-file.pdf', classes: 'embedded-pdf embedded-pdf-page-1', sourcePageStyle: '1' },
+         { src: 'pdf-file.pdf', classes: 'embedded-pdf embedded-pdf-page-2', sourcePageStyle: '2' },
+         { src: 'pdf-file.pdf', classes: 'embedded-pdf embedded-pdf-page-3', sourcePageStyle: '3' }
       ] );
    } );
    
