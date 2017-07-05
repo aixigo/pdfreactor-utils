@@ -10,8 +10,9 @@ const { renderOffscreen, renderPdf, renderToc } = require( '..' );
 
 describe( 'renderToc', () => {
 
+   let dom;
    beforeEach( () => {
-      const dom = new JSDOM( `<!DOCTYPE html>
+      dom = new JSDOM( `<!DOCTYPE html>
          <div id="toc"></div>
          <h1>1 Headline</h1>
          <h2>1.1 Headline</h2>
@@ -22,10 +23,15 @@ describe( 'renderToc', () => {
       global.document = dom.window.document;
    } );
 
+   function triggerLoadedEvent() {
+      global.document.dispatchEvent( new dom.window.Event( 'DOMContentLoaded' ) );
+   }
+
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
    it( 'renders a toc of h1 and h2 headings', () => {
       renderToc( '#toc' );
+      triggerLoadedEvent();
       const entries = Array.from( document.body.querySelectorAll( 'li > a' ) )
          .map( entry => entry.textContent );
       expect( entries ).to.deep.equal( [ '1 Headline', '1.1 Headline', '1.2 Headline', '2 Headline' ] );
@@ -35,6 +41,7 @@ describe( 'renderToc', () => {
 
    it( 'generates ids for headings without id', () => {
       renderToc( '#toc' );
+      triggerLoadedEvent();
       const ids = Array.from( document.body.querySelectorAll( 'h1, h2' ) )
          .map( heading => heading.id );
       expect( ids ).to.deep.equal( [ '1-Headline0', '1-1-Headline1', 'i-have-an-id', '2-Headline3' ] );
@@ -44,6 +51,7 @@ describe( 'renderToc', () => {
 
    it( 'links the toc entries to their respective headline', () => {
       renderToc( '#toc' );
+      triggerLoadedEvent();
       const links = Array.from( document.body.querySelectorAll( 'li > a' ) )
          .map( entry => entry.href.split( '#' ).pop() );
       expect( links ).to.deep.equal( [ '1-Headline0', '1-1-Headline1', 'i-have-an-id', '2-Headline3' ] );
@@ -53,6 +61,7 @@ describe( 'renderToc', () => {
 
    it( 'sets a class on the li depending on the heading level', () => {
       renderToc( '#toc' );
+      triggerLoadedEvent();
       const classes = Array.from( document.body.querySelectorAll( 'li' ) )
          .map( entry => entry.className );
       expect( classes ).to.deep.equal( [ 'level-h1', 'level-h2', 'level-h2', 'level-h1' ] );
@@ -62,6 +71,7 @@ describe( 'renderToc', () => {
 
    it( 'takes a custom heading selector as second argument', () => {
       renderToc( '#toc', 'h1, h3' );
+      triggerLoadedEvent();
       const entries = Array.from( document.body.querySelectorAll( 'li > a' ) )
          .map( entry => entry.textContent );
       expect( entries ).to.deep.equal( [ '1 Headline', '1.1.1 Headline', '2 Headline' ] );
@@ -87,6 +97,7 @@ describe( 'renderToc', () => {
 
       it( 'this entry is omitted from the table of contents', () => {
          renderToc( '#toc' );
+         triggerLoadedEvent();
          const entries = Array.from( document.body.querySelectorAll( 'li > a' ) )
             .map( entry => entry.textContent );
          expect( entries ).to.deep.equal( [ '1 Headline', '1.2 Headline', '2 Headline' ] );

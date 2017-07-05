@@ -29,24 +29,30 @@ module.exports = { renderToc, renderPdf, renderOffscreen };
  * <h1 data-toc-ignore>I will not appear in the table of contents</h1>
  * ```
  * 
+ * Note that this function runs asynchronously as soon as the `DOMContentLoaded` event occurs. This makes
+ * testing in browsers easier, since otherwise when calling this function to early, the headlines were not
+ * yet rendered.
+ * 
  * @param {String} targetElementSelector
  *    selector for the element to append the toc to (should be `ul` or `ol`)
  * @param {String} [headingSelector='h1,h2']
  *    selector for heading elements to create toc entries for
  */
 function renderToc( targetElementSelector, headingSelector = 'h1, h2' ) {
-   const headings = [].slice.call( document.querySelectorAll( headingSelector ) );
-   const tocList = document.querySelector( targetElementSelector );
-   tocList.innerHTML = headings
-      .filter( _ => _.getAttribute( 'data-toc-ignore' ) == null )
-      .reduce( ( tocListContent, heading, index ) => {
-         
-         heading.id = heading.id ? heading.id : heading.textContent.trim().replace( /\W+/g, '-' ) + index;
-         return `${tocListContent}
-            <li class="level-${heading.nodeName.toLowerCase()}">
-               <a href="#${heading.id}">${heading.innerHTML}</a>
-            </li>`;
-      }, tocList.innerHTML );
+   onLoad( () => {
+      const headings = [].slice.call( document.querySelectorAll( headingSelector ) );
+      const tocList = document.querySelector( targetElementSelector );
+      tocList.innerHTML = headings
+         .filter( _ => _.getAttribute( 'data-toc-ignore' ) == null )
+         .reduce( ( tocListContent, heading, index ) => {
+            
+            heading.id = heading.id ? heading.id : heading.textContent.trim().replace( /\W+/g, '-' ) + index;
+            return `${tocListContent}
+               <li class="level-${heading.nodeName.toLowerCase()}">
+                  <a href="#${heading.id}">${heading.innerHTML}</a>
+               </li>`;
+         }, tocList.innerHTML );
+   } );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -133,4 +139,8 @@ function renderOffscreen( selector, renderFunction ) {
    finally {
       parentNode.insertBefore( svgElement, nextSibling );
    }
+}
+
+function onLoad( callBack ) {
+   document.addEventListener( 'DOMContentLoaded', callBack );
 }
