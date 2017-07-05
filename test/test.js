@@ -3,9 +3,10 @@
  * Released under the MIT license.
  * https://opensource.org/licenses/MIT
  */
+/* eslint-env node,mocha */
 const expect = require( 'chai' ).expect;
 const { JSDOM } = require( 'jsdom' );
-const { renderOffscreen, renderPdf, renderToc } = require( '..' );
+const { renderOffscreen, renderPdf, renderToc } = require( '../lib/index.js' );
 
 
 describe( 'renderToc', () => {
@@ -80,7 +81,7 @@ describe( 'renderToc', () => {
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
    describe( 'if an entry has the attribute "data-toc-ignore"', () => {
-      
+
       beforeEach( () => {
          dom = new JSDOM( `<!DOCTYPE html>
             <div id="toc"></div>
@@ -102,7 +103,7 @@ describe( 'renderToc', () => {
             .map( entry => entry.textContent );
          expect( entries ).to.deep.equal( [ '1 Headline', '1.2 Headline', '2 Headline' ] );
       } );
-      
+
    } );
 
 } );
@@ -110,8 +111,7 @@ describe( 'renderToc', () => {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 describe( 'renderPdf', () => {
-   
-   let images
+
    beforeEach( () => {
       const dom = new JSDOM( `<!DOCTYPE html>
          <div id="pdf-container"></div> 
@@ -139,13 +139,13 @@ describe( 'renderPdf', () => {
          { src: 'pdf-file.pdf', classes: 'embedded-pdf embedded-pdf-page-3', sourcePageStyle: '3' }
       ] );
    } );
-   
+
 } );
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 describe( 'renderOffscreen', () => {
-   
+
    let svgElement;
    beforeEach( () => {
       const dom = new JSDOM( `<!DOCTYPE html>
@@ -204,5 +204,5 @@ describe( 'renderOffscreen', () => {
       } );
       expect( renderedValue ).to.equal( 42 );
    } );
-   
+
 } );
